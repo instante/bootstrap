@@ -1,0 +1,33 @@
+{
+    "name": "instante/bootstrap",
+    "type": "library",
+    "description": "User-friendly interface to bootstrap Nette application",
+    "keywords": [
+        "nette",
+        "instante"
+    ],
+    "license": [
+        "BSD-3-Clause",
+        "GPL-2.0",
+        "GPL-3.0"
+    ],
+    "require": {
+        "nette/bootstrap": "~2.3",
+        "nette/robot-loader": "~2.3"
+    },
+    "require-dev": {
+        "nette/tester": "@dev",
+        "jakub-onderka/php-parallel-lint": "~0.6",
+        "instante/utils": "@dev",
+        "tracy/tracy": "@dev"
+    },
+    "suggest": {
+        "instante/utils": "*",
+        "tracy/tracy": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Instante\\Bootstrap\\": "src/"
+        }
+    }
+}
