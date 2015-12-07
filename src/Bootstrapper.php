@@ -126,6 +126,7 @@ class Bootstrapper
     private function prepareConfigurator() {
         $configurator = new Configurator;
         $configurator->addParameters([
+            'appDir' => $this->paths['app'], //compatibility with Nette apps using %appDir%
             'paths' => $this->paths,
         ]);
 
