@@ -2,12 +2,9 @@
 
 namespace Instante\Tests\Bootstrap;
 
-use Instante\Helpers\FileSystem;
 use Tester\Assert;
-use Tester\Environment;
-use Tracy\Debugger;
 
-require_once  __DIR__ . '/prepare-bootstrapper.php';
+require_once __DIR__ . '/prepare-bootstrapper.php';
 
 $loaded = PrepareBootstrapper::buildContainer()->getParameters()['loaded'];
 
