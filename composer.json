@@ -13,12 +13,12 @@
     ],
     "require": {
         "nette/bootstrap": "~2.3",
-        "nette/robot-loader": "~2.3"
+        "nette/robot-loader": "~2.3",
+        "instante/utils": "@dev"
     },
     "require-dev": {
         "nette/tester": "@dev",
         "jakub-onderka/php-parallel-lint": "~0.6",
-        "instante/utils": "@dev",
         "tracy/tracy": "@dev"
     },
     "suggest": {
