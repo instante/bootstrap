@@ -28,9 +28,18 @@ final class PrepareBootstrapper
             ->build();
 
         // reset error handlers and prevents tracy shutdown handler after tracy is enabled
-        $prop = (new \ReflectionClass(Debugger::class))->getProperty('done');
-        $prop->setAccessible(TRUE);
-        $prop->setValue(TRUE);
+        $refl = new \ReflectionClass(Debugger::class);
+        if ($refl->hasProperty('reserved')) { //Tracy >= 2.4
+            $prop = $refl->getProperty('reserved');
+            $prop->setAccessible(TRUE);
+            $prop->setValue(NULL);
+        } else {
+            //back compatibility with tracy <2.4
+            $prop = $refl->getProperty('done');
+            $prop->setAccessible(TRUE);
+            $prop->setValue(TRUE);
+        }
+
         restore_error_handler();
         restore_exception_handler();
 
