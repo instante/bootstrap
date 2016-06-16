@@ -6,6 +6,8 @@ PHP_EXT=`php -r "echo ini_get('extension_dir');"`
 echo "" >> ./tests/php.ini # empty line
 echo "extension_dir=$PHP_EXT" >> ./tests/php.ini
 
+rm -rf tests/tmp/*
+
 ./vendor/bin/tester ./tests/$1 -c ./tests
 EXITCODE=$?
 
