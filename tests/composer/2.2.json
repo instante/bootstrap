@@ -1,0 +1,10 @@
+{
+    "require": {
+        "nette/bootstrap": "2.2.*",
+        "nette/robot-loader": "2.2.*"
+    },
+    "require-dev": {
+        "tracy/tracy": "2.2.*",
+        "nette/application": "2.2.*"
+    }
+}

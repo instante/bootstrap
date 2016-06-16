@@ -22,8 +22,9 @@
         "tracy/tracy": "@dev"
     },
     "suggest": {
-        "instante/utils": "*",
-        "tracy/tracy": "*"
+        "instante/utils": "to simplify file path processing and stuff",
+        "tracy/tracy": "to enable tracy debugging",
+        "nette/application": "to make bootstrap working with nette 2.2 configurator"
     },
     "autoload": {
         "psr-4": {

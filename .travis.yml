@@ -1,9 +1,9 @@
 language: php
 
 env:
-  - NETTE=2.3.*
-  - NETTE=2.2.*
-  - NETTE=@dev
+  - COMPOSER_PATCH=default
+  - COMPOSER_PATCH=2.2
+  - COMPOSER_PATCH=minimal
 
 php:
   - 5.5
