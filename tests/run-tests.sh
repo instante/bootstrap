@@ -7,5 +7,8 @@ echo "" >> ./tests/php.ini # empty line
 echo "extension_dir=$PHP_EXT" >> ./tests/php.ini
 
 ./vendor/bin/tester ./tests/$1 -c ./tests
+EXITCODE=$?
 
 popd
+
+exit "$EXITCODE"
