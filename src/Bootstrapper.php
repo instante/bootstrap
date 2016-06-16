@@ -17,6 +17,9 @@ class Bootstrapper
     const ENV_PRODUCTION = 'production';
     const IS_DEBUGGING_KEY = 'debugMode';
 
+    /** @var callable[] callbacks called on Nette\Configurator after it is prepared */
+    public $onPreparedConfigurator = [];
+
     private $paths;
     private $robotLoadedPaths = [];
 
@@ -63,6 +66,9 @@ class Bootstrapper
         $configurator = $this->prepareConfigurator();
         $this->prepareRobotLoader($configurator);
         $this->addConfigFiles($configurator);
+        foreach ($this->onPreparedConfigurator as $callback) {
+            $callback($configurator);
+        }
         return $configurator->createContainer();
     }
 
