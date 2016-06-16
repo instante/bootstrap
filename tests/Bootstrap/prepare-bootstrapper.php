@@ -3,6 +3,7 @@
 namespace Instante\Tests\Bootstrap;
 
 use Instante\Bootstrap\Bootstrapper;
+use Nette\Configurator;
 use Tracy\Debugger;
 
 require_once __DIR__ . '/../bootstrap.php';
@@ -10,6 +11,9 @@ require_once __DIR__ . '/../bootstrap.php';
 final class PrepareBootstrapper
 {
     public static $paths;
+
+    public static $containerClassIdBase;
+    public static $containerNumber = 0;
 
     /** @return Bootstrapper */
     public static function prepareBootstrapper()
@@ -23,9 +27,12 @@ final class PrepareBootstrapper
     {
         set_error_handler(NULL);
         set_exception_handler(NULL);
-        $container = self::prepareBootstrapper()
-            ->addRobotLoadedPaths(self::$paths['app'])
-            ->build();
+        $bootstrapper = self::prepareBootstrapper();
+        $bootstrapper->onPreparedConfigurator[] = function (Configurator $configurator) {
+            $configurator->addParameters(['container' => ['class' => self::getContainerClass()]]);
+        };
+        $bootstrapper->addRobotLoadedPaths(self::$paths['app']);
+        $container = $bootstrapper->build();
 
         // reset error handlers and prevents tracy shutdown handler after tracy is enabled
         $refl = new \ReflectionClass(Debugger::class);
@@ -45,6 +52,11 @@ final class PrepareBootstrapper
 
         return $container;
     }
+
+    private static function getContainerClass()
+    {
+        return self::$containerClassIdBase . (self::$containerNumber++);
+    }
 }
 
 $root = __DIR__ . '/../sandbox';
@@ -56,3 +68,4 @@ PrepareBootstrapper::$paths = [
     'temp' => TEMP_DIR . "/temp",
 ];
 
+PrepareBootstrapper::$containerClassIdBase = sprintf('Container_%s_%s_', time(), rand(0, 10000));
