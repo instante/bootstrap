@@ -27,7 +27,8 @@ class Bootstrapper
      * @param array $paths
      * must contain these keys containing absolute paths: app, config, log, root, temp
      */
-    public function __construct(array $paths) {
+    public function __construct(array $paths)
+    {
         if (count($d = array_diff(['app', 'config', 'log', 'root', 'temp'], array_keys($paths))) > 0) {
             throw new InvalidArgumentException('missing paths: ' . implode(',', $d));
         }
@@ -99,7 +100,7 @@ class Bootstrapper
             // (C) Nette Framework
 
             $isCookieSet = array_key_exists(self::IS_DEBUGGING_KEY, $cookies);
-            $debugMode = ($isCookieSet && $cookies[self::IS_DEBUGGING_KEY] == 'yes')
+            $debugMode = ($isCookieSet && $cookies[self::IS_DEBUGGING_KEY] === 'yes')
                 || (!$isCookieSet && $this->environment == self::ENV_DEVELOPMENT);
             if (array_key_exists(self::IS_DEBUGGING_KEY, $_GET)) {
                 $debugMode = in_array($_GET[self::IS_DEBUGGING_KEY], ['yes', 'true', 1], TRUE);
@@ -113,7 +114,8 @@ class Bootstrapper
         return $debugMode;
     }
 
-    private function readDeveloperIps() {
+    private function readDeveloperIps()
+    {
         $ipsFile = $this->paths['config'] . '/developerIps';
         if (file_exists($ipsFile)) {
             return array_map('trim', file($ipsFile));
@@ -123,7 +125,8 @@ class Bootstrapper
     }
 
     /** @return Configurator */
-    private function prepareConfigurator() {
+    private function prepareConfigurator()
+    {
         $configurator = new Configurator;
         $configurator->addParameters([
             'appDir' => $this->paths['app'], //compatibility with Nette apps using %appDir%
@@ -144,7 +147,8 @@ class Bootstrapper
         return $configurator;
     }
 
-    private function prepareRobotLoader(Configurator $configurator) {
+    private function prepareRobotLoader(Configurator $configurator)
+    {
         $robotLoader = $configurator->createRobotLoader();
         foreach ($this->robotLoadedPaths as $path) {
             $robotLoader->addDirectory($path);
@@ -152,7 +156,8 @@ class Bootstrapper
         $robotLoader->register();
     }
 
-    private function addConfigFiles(Configurator $configurator) {
+    private function addConfigFiles(Configurator $configurator)
+    {
         // general config
         $configurator->addConfig($this->paths['config'] . '/default.neon');
 
