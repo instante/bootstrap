@@ -1,0 +1,11 @@
+{
+    "methodCalls": [
+        {
+            "class": "\\Nette\\DI\\Container",
+            "method": "getByType",
+            "position": 0
+        }
+    ],
+    "functionCalls": [
+    ]
+}
