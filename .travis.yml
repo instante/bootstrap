@@ -3,7 +3,7 @@ language: php
 env:
   - COMPOSER_PATCH=default
   - COMPOSER_PATCH=2.2
-  - COMPOSER_PATCH=minimal
+  - COMPOSER_PATCH=2.3
 
 php:
   - 5.5
