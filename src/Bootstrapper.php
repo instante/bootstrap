@@ -169,17 +169,17 @@ class Bootstrapper
 
         // debug mode dependent config
         if ($this->debugMode && file_exists($debugConfig = $this->paths['config'] . '/debug.neon')) {
-            $configurator->addConfig($debugConfig, $configurator::NONE);
+            $configurator->addConfig($debugConfig);
         }
 
         // environment dependent config
         if (file_exists($envConfig = $this->paths['config'] . '/env.' . $this->environment . '.neon')) {
-            $configurator->addConfig($envConfig, $configurator::NONE);
+            $configurator->addConfig($envConfig);
         }
 
         // local machine config
         if (file_exists($localConfig = $this->paths['config'] . '/local.neon')) {
-            $configurator->addConfig($localConfig, $configurator::NONE);
+            $configurator->addConfig($localConfig);
         }
     }
 }

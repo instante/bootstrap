@@ -25,8 +25,6 @@ final class PrepareBootstrapper
 
     public static function buildContainer()
     {
-        set_error_handler(NULL);
-        set_exception_handler(NULL);
         $bootstrapper = self::prepareBootstrapper();
         $bootstrapper->onPreparedConfigurator[] = function (Configurator $configurator) {
             $configurator->addParameters(['container' => ['class' => self::getContainerClass()]]);
@@ -46,9 +44,6 @@ final class PrepareBootstrapper
             $prop->setAccessible(TRUE);
             $prop->setValue(TRUE);
         }
-
-        restore_error_handler();
-        restore_exception_handler();
 
         return $container;
     }
