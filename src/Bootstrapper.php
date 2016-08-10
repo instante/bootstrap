@@ -182,4 +182,9 @@ class Bootstrapper
             $configurator->addConfig($localConfig);
         }
     }
+
+    protected function isConsoleMode() // marked as protected to enable testing
+    {
+        return php_sapi_name() === 'cli';
+    }
 }

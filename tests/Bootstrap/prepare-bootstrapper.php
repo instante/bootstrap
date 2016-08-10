@@ -8,6 +8,17 @@ use Tracy\Debugger;
 
 require_once __DIR__ . '/../bootstrap.php';
 
+class TestBootstrapper extends Bootstrapper
+{
+    public static $fakeConsoleMode = FALSE;
+
+    protected function isConsoleMode()
+    {
+        return self::$fakeConsoleMode;
+    }
+
+}
+
 final class PrepareBootstrapper
 {
     public static $paths;
@@ -20,12 +31,12 @@ final class PrepareBootstrapper
     {
         @mkdir(self::$paths['temp'], 0777, TRUE);
         @mkdir(self::$paths['log'], 0777, TRUE);
-        return new Bootstrapper(self::$paths);
+        return new TestBootstrapper(self::$paths);
     }
 
     public static function buildContainer()
     {
-        $bootstrapper = self::prepareBootstrapper();
+        $bootstrapper = static::prepareBootstrapper();
         $bootstrapper->onPreparedConfigurator[] = function (Configurator $configurator) {
             $configurator->addParameters(['container' => ['class' => self::getContainerClass()]]);
         };
