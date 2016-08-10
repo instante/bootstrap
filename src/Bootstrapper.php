@@ -26,6 +26,8 @@ class Bootstrapper
     private $environment;
     private $debugMode;
 
+    private $consoleDebugMode = ConsoleDebugModeEnum::AUTO;
+
     /**
      * @param array $paths
      * must contain these keys containing absolute paths: app, config, log, root, temp
@@ -94,6 +96,16 @@ class Bootstrapper
      */
     private function detectDebugMode()
     {
+        if ($this->isConsoleMode()) {
+            if (is_bool($this->consoleDebugMode)) {
+                // configured externally
+                return $this->consoleDebugMode;
+            } else {
+                // autodetect
+                return $this->environment === self::ENV_DEVELOPMENT;
+            }
+
+        }
         $developerIps = $this->readDeveloperIps();
         $debugMode = FALSE;
         $debugModeAllowed = in_array(array_key_exists('REMOTE_ADDR', $_SERVER) ? $_SERVER['REMOTE_ADDR'] :
@@ -186,5 +198,16 @@ class Bootstrapper
     protected function isConsoleMode() // marked as protected to enable testing
     {
         return php_sapi_name() === 'cli';
+    }
+
+    /**
+     * @param string $consoleDebugMode ConsoleDebugModeEnum
+     * @return $this
+     */
+    public function setConsoleDebugMode($consoleDebugMode)
+    {
+        ConsoleDebugModeEnum::assertValidValue($consoleDebugMode);
+        $this->consoleDebugMode = $consoleDebugMode;
+        return $this;
     }
 }

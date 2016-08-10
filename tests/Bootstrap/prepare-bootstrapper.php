@@ -34,9 +34,9 @@ final class PrepareBootstrapper
         return new TestBootstrapper(self::$paths);
     }
 
-    public static function buildContainer()
+    public static function buildContainer(Bootstrapper $bootstrapper = NULL)
     {
-        $bootstrapper = static::prepareBootstrapper();
+        $bootstrapper = $bootstrapper === NULL ? self::prepareBootstrapper() : $bootstrapper;
         $bootstrapper->onPreparedConfigurator[] = function (Configurator $configurator) {
             $configurator->addParameters(['container' => ['class' => self::getContainerClass()]]);
         };
@@ -65,13 +65,18 @@ final class PrepareBootstrapper
     }
 }
 
-$root = __DIR__ . '/../sandbox';
-PrepareBootstrapper::$paths = [
-    'app' => "$root/app",
-    'config' => "$root/config",
-    'log' => TEMP_DIR . "/log",
-    'root' => $root,
-    'temp' => TEMP_DIR . "/temp",
-];
+function set_bootstrap_test_sandbox($sandbox = 'default')
+{
+    $root = __DIR__ . '/../sandbox/' . $sandbox;
+    PrepareBootstrapper::$paths = [
+        'app' => "$root/app",
+        'config' => "$root/config",
+        'log' => TEMP_DIR . "/log",
+        'root' => $root,
+        'temp' => TEMP_DIR . "/temp",
+    ];
+}
+
+set_bootstrap_test_sandbox();
 
 PrepareBootstrapper::$containerClassIdBase = sprintf('Container_%s_%s_', time(), rand(0, 10000));
