@@ -16,6 +16,7 @@ class Bootstrapper
     const ENV_STAGE = 'stage';
     const ENV_PRODUCTION = 'production';
     const IS_DEBUGGING_KEY = 'debugMode';
+    const DIRECTORY_DELIMITER = '/';
 
     /** @var callable[] callbacks called on Nette\Configurator after it is prepared */
     public $onPreparedConfigurator = [];
@@ -63,6 +64,7 @@ class Bootstrapper
     /** @return Container */
     public function build()
     {
+        $this->checkPaths();
         $this->environment = $this->detectEnvironment();
         $this->debugMode = $this->detectDebugMode();
         $configurator = $this->prepareConfigurator();
@@ -210,4 +212,42 @@ class Bootstrapper
         $this->consoleDebugMode = $consoleDebugMode;
         return $this;
     }
+
+    public function checkPaths()
+    {
+        $errors = [];
+        $checkDirKeys = ['log', 'temp/sessions', 'temp/cache'];
+
+        foreach ($checkDirKeys as $key) {
+            $folders = explode(self::DIRECTORY_DELIMITER, $key);
+            $baseKey = $folders[0];
+            unset($folders[0]);
+
+            $currentFolder = $this->paths[$baseKey];
+            $this->checkFolder($currentFolder, $errors);
+            foreach ($folders as $folder) {
+                $currentFolder .= self::DIRECTORY_DELIMITER . $folder;
+                $this->checkFolder($currentFolder, $errors);
+            }
+        }
+
+        if (!empty($errors)) {
+            foreach ($errors as $error) {
+                echo $error;
+            }
+            exit;
+        }
+    }
+
+    private function checkFolder($path, array &$errors)
+    {
+        if (!is_dir($path) && !@mkdir($path)) {
+            if (php_sapi_name() === 'cli') {
+                array_push($errors, 'Folder ' . $path . ' does not exists and can\'t be created by php' . PHP_EOL);
+            } else {
+                array_push($errors, 'Folder <strong>' . $path . '</strong> does not exists and can\'t be created by php<br />');
+            }
+        }
+    }
+
 }
