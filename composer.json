@@ -12,8 +12,8 @@
         "GPL-3.0"
     ],
     "require": {
-        "nette/bootstrap": "~2.3",
-        "nette/robot-loader": "~2.3",
+        "nette/bootstrap": "~2.4",
+        "nette/robot-loader": "~2.4",
         "instante/utils": "@dev"
     },
     "require-dev": {
