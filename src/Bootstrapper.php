@@ -84,7 +84,8 @@ class Bootstrapper
         if (file_exists($f = $this->paths['config'] . "/environment")) {
             return trim(file_get_contents($f));
         } else {
-            die("The application is not configured to run in this environment - no environment file found.");
+            require __DIR__ . '/assets/no-environment.phtml';
+            die;
         }
     }
 

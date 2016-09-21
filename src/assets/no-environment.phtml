@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Project not deployed | Instante</title>
+    <style>
+        .result {
+            display: none;
+        }
+
+        .result.error {
+            font-weight: bold;
+            color: red;
+        }
+    </style>
+</head>
+<body>
+<h1>Project not deployed</h1>
+<p>
+    The project deployment on this machine is not configured yet.
+</p>
+<p class="pending-result">
+    Trying to auto-redirect to deploy wizard.
+</p>
+<p id="result-no-xhr" class="result error">
+    XMLHttpRequest object not available in your browser, unable to detect if auto-redirect is possible.
+    Try this link to <a href="../bin/deployment/deploy-project.php">deploy wizard</a>.
+</p>
+<p id="result-ok" class="result">
+    Browser <a href="../bin/deployment/deploy-project.php">deploy wizard</a> should be working, redirecting...
+</p>
+<p id="result-not-found" class="result error">
+    Deploy wizard is not accessible by web browser under estimated URL. open
+    <code>&lt;project root&gt;/bin/deployment/deploy-project.php</code> manually
+    either using command-line PHP or web browser.
+</p>
+<p class="pending-result">
+    If auto-redirect fails, open <code>&lt;project root&gt;/bin/deployment/deploy-project.php</code> manually
+    either using command-line PHP or web browser.
+</p>
+<script>
+    (function()
+    {
+        var deployLink = '../bin/deployment/deploy-project.php';
+
+        function showResult(state)
+        {
+            document.getElementById('result-' + state).style.display = 'block';
+            var pendings = document.getElementsByClassName('pending-result');
+            for (var i = 0; i < pendings.length; i++) {
+                pendings[i].style.display = 'none';
+            }
+        }
+
+        var state = document.getElementById('state');
+        if (typeof XMLHttpRequest === 'undefined') {
+            showResult('no-xhr');
+            return;
+        }
+
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function()
+        {
+            if (this.readyState === 4) {
+                if (this.status === 200 && this.responseText.indexOf('Instante installation') !== -1) {
+                    showResult('ok');
+                    window.location.href = deployLink;
+                } else {
+                    showResult('not-found');
+                }
+            }
+        };
+        xhr.open('GET', deployLink, true);
+        xhr.send();
+    })();
+</script>
+</body>
+</html>
