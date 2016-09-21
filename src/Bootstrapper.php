@@ -246,7 +246,8 @@ class Bootstrapper
             if (php_sapi_name() === 'cli') {
                 array_push($errors, 'Folder ' . $path . ' does not exists and can\'t be created by php' . PHP_EOL);
             } else {
-                array_push($errors, 'Folder <strong>' . $path . '</strong> does not exists and can\'t be created by php<br />');
+                array_push($errors, 'Folder <strong>' . $path
+                    . '</strong> does not exists and can\'t be created by php<br />');
             }
         }
     }
