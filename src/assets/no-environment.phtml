@@ -62,7 +62,7 @@
         xhr.onreadystatechange = function()
         {
             if (this.readyState === 4) {
-                if (this.status === 200 && this.responseText.indexOf('Instante installation') !== -1) {
+                if (this.status === 200 && this.responseText.indexOf('data-instante-deployment') !== -1) {
                     showResult('ok');
                     window.location.href = deployLink;
                 } else {
