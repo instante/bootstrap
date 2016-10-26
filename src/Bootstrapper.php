@@ -15,6 +15,7 @@ class Bootstrapper
     const ENV_PRODUCTION = 'production';
 
     const IS_DEBUGGING_KEY = 'debugMode';
+    const DEBUG_DISABLED_EXPLICITLY = 'debugDisabledExplicitly';
     const DIRECTORY_DELIMITER = '/';
 
     /** @var callable[] callbacks called on Nette\Configurator after it is prepared */
@@ -27,6 +28,8 @@ class Bootstrapper
     private $debugMode;
 
     private $consoleDebugMode = ConsoleDebugModeEnum::AUTO;
+    /** @var bool indicates that debug mode is available but was disabled explicitly (by cookie or query parameter) */
+    private $debugDisabledExplicitly = FALSE;
 
     /**
      * @param array $paths
@@ -132,6 +135,7 @@ class Bootstrapper
         $configurator->setDebugMode($this->debugMode);
         $configurator->addParameters([
             'environment' => $this->environment,
+            self::DEBUG_DISABLED_EXPLICITLY => $this->debugDisabledExplicitly,
         ]);
         if (class_exists(Debugger::class)) {
             $configurator->enableDebugger($this->paths['log']);
@@ -291,6 +295,7 @@ class Bootstrapper
 
         if ($debugParameter !== NULL) {
             $debugMode = $debugParameter === 'yes';
+            $this->debugDisabledExplicitly = !$debugMode;
             return $debugMode;
         } else {
             return NULL;
