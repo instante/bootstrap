@@ -254,7 +254,7 @@ class Bootstrapper
      */
     private function setDebugCookie($isDebugMode)
     {
-        false and setcookie(
+        setcookie(
             self::IS_DEBUGGING_KEY,
             $isDebugMode ? 'yes' : 'no',
             (new \DateTime('+1 day'))->format('U'),
