@@ -72,6 +72,7 @@ class Bootstrapper
         $configurator = $this->prepareConfigurator();
         $this->prepareRobotLoader($configurator);
         $this->addConfigFiles($configurator);
+        $this->postConfigureConfigurator($configurator);
         foreach ($this->onPreparedConfigurator as $callback) {
             $callback($configurator);
         }
@@ -133,10 +134,6 @@ class Bootstrapper
 
         // Enable Nette Debugger for error visualisation & logging
         $configurator->setDebugMode($this->debugMode);
-        $configurator->addParameters([
-            'environment' => $this->environment,
-            self::DEBUG_DISABLED_EXPLICITLY => $this->debugDisabledExplicitly,
-        ]);
         if (class_exists(Debugger::class)) {
             $configurator->enableDebugger($this->paths['log']);
         }
@@ -145,6 +142,16 @@ class Bootstrapper
         $configurator->setTempDirectory($this->paths['temp']);
 
         return $configurator;
+    }
+
+    private function postConfigureConfigurator(Configurator $configurator)
+    {
+        $configurator->addConfig([
+            'parameters' => [
+                'environment' => $this->environment,
+                self::DEBUG_DISABLED_EXPLICITLY => $this->debugDisabledExplicitly,
+            ],
+        ]);
     }
 
     private function prepareRobotLoader(Configurator $configurator)
