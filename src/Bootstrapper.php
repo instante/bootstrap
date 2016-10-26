@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Instante\Bootstrap;
-
 
 use Instante\Helpers\FileSystem;
 use InvalidArgumentException;
@@ -15,6 +13,7 @@ class Bootstrapper
     const ENV_DEVELOPMENT = 'development';
     const ENV_STAGE = 'stage';
     const ENV_PRODUCTION = 'production';
+
     const IS_DEBUGGING_KEY = 'debugMode';
     const DIRECTORY_DELIMITER = '/';
 
@@ -100,39 +99,14 @@ class Bootstrapper
     private function detectDebugMode()
     {
         if ($this->isConsoleMode()) {
-            if (is_bool($this->consoleDebugMode)) {
-                // configured externally
-                return $this->consoleDebugMode;
-            } else {
-                // autodetect
-                return $this->environment === self::ENV_DEVELOPMENT;
-            }
-
+            return $this->isConsoleDebugMode();
+        } elseif ($this->hasHostAllowedDebug()) {
+            $debugMode = $this->detectHttpDebugMode();
+            $this->setDebugCookie($debugMode ? 'yes' : 'no');
+            return $debugMode;
+        } else {
+            return FALSE;
         }
-        $developerIps = $this->readDeveloperIps();
-        $debugMode = FALSE;
-        $debugModeAllowed = in_array(array_key_exists('REMOTE_ADDR', $_SERVER) ? $_SERVER['REMOTE_ADDR'] :
-            php_uname('n'), $developerIps, TRUE);
-        if ($debugModeAllowed) {
-            //just a complicated but proof method to get cookie parameter
-            $useFilter = (!in_array(ini_get('filter.default'), ['', 'unsafe_raw']) || ini_get('filter.default_flags'));
-            $cookies = $useFilter ? filter_input_array(INPUT_COOKIE, FILTER_UNSAFE_RAW) :
-                (empty($_COOKIE) ? [] : $_COOKIE);
-            // (C) Nette Framework
-
-            $isCookieSet = array_key_exists(self::IS_DEBUGGING_KEY, $cookies);
-            $debugMode = ($isCookieSet && $cookies[self::IS_DEBUGGING_KEY] === 'yes')
-                || (!$isCookieSet && $this->environment == self::ENV_DEVELOPMENT);
-            if (array_key_exists(self::IS_DEBUGGING_KEY, $_GET)) {
-                $debugMode = in_array($_GET[self::IS_DEBUGGING_KEY], ['yes', 'true', 1], TRUE);
-            }
-
-            $cookieExpiration = new \DateTime('+1 day');
-            setcookie(self::IS_DEBUGGING_KEY, $debugMode ? 'yes' :
-                'no', $cookieExpiration->format('U'), '/', NULL, FALSE, TRUE);
-        }
-
-        return $debugMode;
     }
 
     private function readDeveloperIps()
@@ -155,9 +129,10 @@ class Bootstrapper
         ]);
 
         // Enable Nette Debugger for error visualisation & logging
-
         $configurator->setDebugMode($this->debugMode);
-        $configurator->addParameters(['environment' => $this->environment]);
+        $configurator->addParameters([
+            'environment' => $this->environment,
+        ]);
         if (class_exists(Debugger::class)) {
             $configurator->enableDebugger($this->paths['log']);
         }
@@ -252,4 +227,73 @@ class Bootstrapper
         }
     }
 
+    /** @return string */
+    private function getHostName()
+    {
+        return array_key_exists('REMOTE_ADDR', $_SERVER) ? $_SERVER['REMOTE_ADDR'] : php_uname('n');
+    }
+
+    /** @return bool */
+    private function isConsoleDebugMode()
+    {
+        if (is_bool($this->consoleDebugMode)) {
+            // configured externally
+            return $this->consoleDebugMode;
+        } else {
+            // autodetect
+            return $this->environment === self::ENV_DEVELOPMENT;
+        }
+    }
+
+    /**
+     * @param bool $isDebugMode
+     */
+    private function setDebugCookie($isDebugMode)
+    {
+        false and setcookie(
+            self::IS_DEBUGGING_KEY,
+            $isDebugMode ? 'yes' : 'no',
+            (new \DateTime('+1 day'))->format('U'),
+            '/',
+            NULL, // domain
+            FALSE, // secure
+            TRUE // http only
+        );
+    }
+
+    /** @return bool */
+    private function hasHostAllowedDebug()
+    {
+        return in_array($this->getHostName(), $this->readDeveloperIps(), TRUE);
+    }
+
+    /** @return bool */
+    private function detectHttpDebugMode()
+    {
+        $debugFromGet = $this->detectDebugFromQuery(INPUT_GET);
+        if ($debugFromGet !== NULL) {
+            return $debugFromGet;
+        }
+        $debugFromCookie = $this->detectDebugFromQuery(INPUT_COOKIE);
+        if ($debugFromCookie !== NULL) {
+            return $debugFromCookie;
+        }
+
+        return $this->environment == self::ENV_DEVELOPMENT;
+    }
+
+    private function detectDebugFromQuery($type)
+    {
+        $arr = $type === INPUT_GET ? $_GET : $_COOKIE; // TODO replace with filter_input
+        $debugParameter = isset($arr[self::IS_DEBUGGING_KEY]) ? $arr[self::IS_DEBUGGING_KEY] : NULL;
+        // commented out until solved how to test filter_input
+        // filter_input(INPUT_*, self::IS_DEBUGGING_KEY, FILTER_SANITIZE_STRING);
+
+        if ($debugParameter !== NULL) {
+            $debugMode = $debugParameter === 'yes';
+            return $debugMode;
+        } else {
+            return NULL;
+        }
+    }
 }
